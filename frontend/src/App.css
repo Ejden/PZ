@@ -1,0 +1,30 @@
+.menu-item {
+    padding: 16px;
+    font-size: 1.2rem;
+}
+
+.group-list-title {
+    font-size: 1.2rem;
+}
+
+.list-main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.group-list-table {
+    width: 100%;
+}
+
+.group-list-table-id, .group-list-table-name, .group-list-table-year {
+    width: 30%;
+}
+
+.group-list-table-modify {
+    width: 5%;
+}
+
+.group-list-table-remove {
+    width: 5%;
+}
