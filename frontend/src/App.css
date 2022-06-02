@@ -28,3 +28,15 @@
 .group-list-table-remove {
     width: 5%;
 }
+
+.create-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.create-modal-button-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
