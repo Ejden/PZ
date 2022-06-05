@@ -40,3 +40,14 @@
     display: flex;
     justify-content: space-between;
 }
+
+.custom-label {
+    display: inline-block;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #212529;
+    word-break: break-word;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+}

@@ -42,6 +42,11 @@ class InMemoryCourseRepository implements CourseRepository {
     }
 
     @Override
+    public void updateCourse(Course course) {
+        courses.replace(course.id(), course);
+    }
+
+    @Override
     public void removeCourse(UUID courseId) {
         courses.remove(courseId);
     }

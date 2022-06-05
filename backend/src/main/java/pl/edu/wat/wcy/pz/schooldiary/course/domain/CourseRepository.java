@@ -12,5 +12,7 @@ public interface CourseRepository {
 
     void addStudent(UUID courseId, UUID studentId);
 
+    void updateCourse(Course course);
+
     void removeCourse(UUID courseId);
 }
