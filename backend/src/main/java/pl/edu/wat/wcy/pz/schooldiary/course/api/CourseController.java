@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.edu.wat.wcy.pz.schooldiary.course.domain.Course;
 import pl.edu.wat.wcy.pz.schooldiary.course.domain.CourseCreateRequest;
 import pl.edu.wat.wcy.pz.schooldiary.course.domain.CourseService;
+import pl.edu.wat.wcy.pz.schooldiary.course.domain.CourseUpdateRequest;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -48,6 +49,15 @@ class CourseController {
     @DeleteMapping(path = "/{courseId}")
     public ResponseEntity<Void> removeCourse(@PathVariable String courseId) {
         courseService.removeCourse(UUID.fromString(courseId));
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(path = "/{courseId}")
+    public ResponseEntity<Void> updateCourse(
+            @PathVariable String courseId,
+            @Valid @RequestBody CourseUpdateRequest updateRequest
+    ) {
+        courseService.updateCourse(UUID.fromString(courseId), updateRequest);
         return ResponseEntity.ok().build();
     }
 }

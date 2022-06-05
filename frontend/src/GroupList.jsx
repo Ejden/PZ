@@ -1,10 +1,11 @@
 import {AppShell, Button, Header, TextInput, Modal, Navbar, NumberInput, Table, Text, UnstyledButton} from "@mantine/core";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useForm} from "@mantine/form";
 import axios from "axios";
 
 const GroupList = () => {
     const [opened, setOpened] = useState(false);
+    const [modifyModalOpened, setModifyModalOpened] = useState(false);
     const [groups, setGroups] = useState([]);
 
     const header = <Header height={40} p={"sm"}>
@@ -24,12 +25,37 @@ const GroupList = () => {
             .then(response => setGroups(response.data.courses));
     }
 
-    getClasses();
+    useEffect(() => {
+        getClasses();
+    }, []);
+
+    const modifyGroupForm = useForm({
+        initialValues: {
+            id: '',
+            name: '',
+            schoolYear: ''
+        },
+        validate: {
+            name: (value) => (value.trim().length > 0 ? null : 'Niepoprawna nazwa'),
+            schoolYear: (value) => (value > 1900 ? null : 'Rocznik powinien być wyższy niż 1900')
+        }
+    });
+
+    const openModifyModal = (id) => {
+        const group = groups.find(it => it.id === id);
+        if (!!group) {
+            modifyGroupForm.setFieldValue('id', group.id);
+            modifyGroupForm.setFieldValue('name', group.name);
+            modifyGroupForm.setFieldValue('schoolYear', parseInt(group.schoolYear));
+            setModifyModalOpened(true);
+        }
+    }
 
     const noGroups = groups.length === 0;
 
     const removeGroup = (id) => {
         axios.delete('http://localhost:8080/api/course/' + id)
+            .then(() => getClasses());
     }
 
     const content = <>
@@ -62,7 +88,7 @@ const GroupList = () => {
                         <td>{group.id}</td>
                         <td>{group.name}</td>
                         <td>{group.schoolYear}</td>
-                        <td><Button>Modyfikuj</Button></td>
+                        <td><Button onClick={() => openModifyModal(group.id)}>Modyfikuj</Button></td>
                         <td><Button color="red" onClick={() => removeGroup(group.id)}>Usuń</Button></td>
                     </tr>)}
                     </tbody>
@@ -74,27 +100,27 @@ const GroupList = () => {
     const newGroupForm = useForm({
         initialValues: {
             name: '',
-            startYear: 2022
+            schoolYear: 2022
         },
         validate: {
             name: (value) => (value.trim().length > 0 ? null : 'Niepoprawna nazwa'),
-            startYear: (value) => (value > 1900 ? null : 'Rocznik powinien być wyższy niż 1900')
+            schoolYear: (value) => (value > 1900 ? null : 'Rocznik powinien być wyższy niż 1900')
         }
     });
 
     const clearAndCloseCreateModal = () => {
         newGroupForm.values.name = '';
-        newGroupForm.values.startYear = 2022;
+        newGroupForm.values.schoolYear = 2022;
         setOpened(false);
     }
 
     const createClass = (data) => {
-        if (data.name.trim().length !== 0 && data.startYear > 1900) {
+        if (data.name.trim().length !== 0 && data.schoolYear > 1900) {
             axios.post(
                 'http://localhost:8080/api/course',
                 {
                     name: data.name,
-                    schoolYear: data.startYear.toString()
+                    schoolYear: data.schoolYear.toString()
                 }
             ).then(() => getClasses());
         }
@@ -119,7 +145,7 @@ const GroupList = () => {
                     defaultValue={2022}
                     label="Rocznik"
                     required
-                    {...newGroupForm.getInputProps('startYear')}
+                    {...newGroupForm.getInputProps('schoolYear')}
                 />
 
                 <div className="create-modal-button-container">
@@ -138,6 +164,62 @@ const GroupList = () => {
         </div>
     </Modal>
 
+    const clearAndCloseModifyModal = () => {
+        setModifyModalOpened(false);
+    }
+
+    const modifyClass = (data) => {
+        if (data.name.trim().length !== 0 && data.schoolYear > 1900) {
+            axios.put(
+                'http://localhost:8080/api/course/' + data.id,
+                {
+                    name: data.name,
+                    schoolYear: data.schoolYear.toString()
+                }
+            ).then(() => getClasses());
+        }
+        clearAndCloseModifyModal();
+    }
+
+    const modifyModal = <Modal
+        opened={modifyModalOpened}
+        onClose={() => setModifyModalOpened(false)}
+        title="Modyfikuj klasę"
+    >
+        <div>
+            <form className="create-modal-content" onSubmit={modifyGroupForm.onSubmit((data) => modifyClass(data))}>
+                <span className="custom-label">Identyfikator</span>
+                <span>{modifyGroupForm.values.id}</span>
+
+                <TextInput
+                    label="Nazwa klasy"
+                    placeholder="Nazwa klasy"
+                    required
+                    {...modifyGroupForm.getInputProps('name')}
+                />
+
+                <NumberInput
+                    label="Rocznik"
+                    required
+                    {...modifyGroupForm.getInputProps('schoolYear')}
+                />
+
+                <div className="create-modal-button-container">
+                    <Button type="submit">
+                        Modyfikuj klasę
+                    </Button>
+                    <Button
+                        variant="outline"
+                        color="red"
+                        onClick={() => clearAndCloseModifyModal()}
+                    >
+                        Anuluj
+                    </Button>
+                </div>
+            </form>
+        </div>
+    </Modal>
+
     return <AppShell
         fixed
         header={header}
@@ -147,6 +229,7 @@ const GroupList = () => {
     >
         {content}
         {modal}
+        {modifyModal}
     </AppShell>
 }
 

@@ -55,6 +55,18 @@ public final class CourseService {
         return course;
     }
 
+    public void updateCourse(UUID courseId, CourseUpdateRequest updateRequest) {
+        Course oldCourseVersion = courseRepository.findById(courseId);
+        Course course = new Course(
+                courseId,
+                updateRequest.name(),
+                updateRequest.schoolYear(),
+                new ArrayList<>(),
+                oldCourseVersion.createdAt()
+        );
+        courseRepository.updateCourse(course);
+    }
+
     public void removeCourse(UUID courseId) {
         courseRepository.removeCourse(courseId);
     }
