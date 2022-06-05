@@ -28,6 +28,10 @@ const GroupList = () => {
 
     const noGroups = groups.length === 0;
 
+    const removeGroup = (id) => {
+        axios.delete('http://localhost:8080/api/course/' + id)
+    }
+
     const content = <>
         <div className={"list-main"}>
             <span className={'group-list-title'}>Lista grup szkolnych</span>
@@ -59,7 +63,7 @@ const GroupList = () => {
                         <td>{group.name}</td>
                         <td>{group.schoolYear}</td>
                         <td><Button>Modyfikuj</Button></td>
-                        <td><Button>Usuń</Button></td>
+                        <td><Button color="red" onClick={() => removeGroup(group.id)}>Usuń</Button></td>
                     </tr>)}
                     </tbody>
                 </Table>
