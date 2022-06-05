@@ -54,4 +54,8 @@ public final class CourseService {
         courseRepository.save(course);
         return course;
     }
+
+    public void removeCourse(UUID courseId) {
+        courseRepository.removeCourse(courseId);
+    }
 }

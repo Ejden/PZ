@@ -40,4 +40,9 @@ class InMemoryCourseRepository implements CourseRepository {
         }
         course.studentIds().add(studentId);
     }
+
+    @Override
+    public void removeCourse(UUID courseId) {
+        courses.remove(courseId);
+    }
 }

@@ -1,12 +1,7 @@
 package pl.edu.wat.wcy.pz.schooldiary.course.api;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.edu.wat.wcy.pz.schooldiary.course.domain.Course;
 import pl.edu.wat.wcy.pz.schooldiary.course.domain.CourseCreateRequest;
 import pl.edu.wat.wcy.pz.schooldiary.course.domain.CourseService;
@@ -48,5 +43,11 @@ class CourseController {
         return ResponseEntity
                 .created(URI.create(String.format("/api/course/%s", course.id().toString())))
                 .body(course);
+    }
+
+    @DeleteMapping(path = "/{courseId}")
+    public ResponseEntity<Void> removeCourse(@PathVariable String courseId) {
+        courseService.removeCourse(UUID.fromString(courseId));
+        return ResponseEntity.ok().build();
     }
 }
