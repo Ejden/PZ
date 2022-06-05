@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import pl.edu.wat.wcy.pz.schooldiary.course.api.CourseDto;
 import pl.edu.wat.wcy.pz.schooldiary.student.domain.StudentRepository;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +47,8 @@ public final class CourseService {
                 UUID.randomUUID(),
                 createRequest.name(),
                 createRequest.schoolYear(),
-                new ArrayList<>()
+                new ArrayList<>(),
+                Instant.now()
         );
 
         courseRepository.save(course);
