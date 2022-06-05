@@ -1,8 +1,11 @@
-import {AppShell, Button, Header, Input, Modal, Navbar, Table, Text, UnstyledButton} from "@mantine/core";
+import {AppShell, Button, Header, TextInput, Modal, Navbar, NumberInput, Table, Text, UnstyledButton} from "@mantine/core";
 import {useState} from "react";
+import {useForm} from "@mantine/form";
+import axios from "axios";
 
 const GroupList = () => {
     const [opened, setOpened] = useState(false);
+    const [groups, setGroups] = useState([]);
 
     const header = <Header height={40} p={"sm"}>
         <span>Dziennik elektroniczny</span>
@@ -16,23 +19,12 @@ const GroupList = () => {
         </Navbar.Section>
     </Navbar>
 
-    const groups = [
-        {
-            id: '1',
-            name: '1a',
-            schoolYear: '2021'
-        },
-        {
-            id: '2',
-            name: '2a',
-            schoolYear: '2021'
-        },
-        {
-            id: '3',
-            name: '3a',
-            schoolYear: '2021'
-        }
-    ]
+    const getClasses = () => {
+        axios.get('http://localhost:8080/api/course')
+            .then(response => setGroups(response.data.courses));
+    }
+
+    getClasses();
 
     const noGroups = groups.length === 0;
 
@@ -75,24 +67,70 @@ const GroupList = () => {
         </div>
     </>
 
+    const newGroupForm = useForm({
+        initialValues: {
+            name: '',
+            startYear: 2022
+        },
+        validate: {
+            name: (value) => (value.trim().length > 0 ? null : 'Niepoprawna nazwa'),
+            startYear: (value) => (value > 1900 ? null : 'Rocznik powinien być wyższy niż 1900')
+        }
+    });
+
+    const clearAndCloseCreateModal = () => {
+        newGroupForm.values.name = '';
+        newGroupForm.values.startYear = 2022;
+        setOpened(false);
+    }
+
+    const createClass = (data) => {
+        if (data.name.trim().length !== 0 && data.startYear > 1900) {
+            axios.post(
+                'http://localhost:8080/api/course',
+                {
+                    name: data.name,
+                    schoolYear: data.startYear.toString()
+                }
+            ).then(() => getClasses());
+        }
+        clearAndCloseCreateModal();
+    }
+
     const modal = <Modal
         opened={opened}
         onClose={() => setOpened(false)}
         title="Utwórz klasę"
     >
-        <div className="create-modal-content">
-            <Input
-                placeholder="Nazwa klasy"
-            />
+        <div>
+            <form className="create-modal-content" onSubmit={newGroupForm.onSubmit((data) => createClass(data))}>
+                <TextInput
+                    label="Nazwa klasy"
+                    placeholder="Nazwa klasy"
+                    required
+                    {...newGroupForm.getInputProps('name')}
+                />
 
-            <div className="create-modal-button-container">
-                <Button>
-                    Utwórz klasę
-                </Button>
-                <Button variant="outline" color="red">
-                    Anuluj
-                </Button>
-            </div>
+                <NumberInput
+                    defaultValue={2022}
+                    label="Rocznik"
+                    required
+                    {...newGroupForm.getInputProps('startYear')}
+                />
+
+                <div className="create-modal-button-container">
+                    <Button type="submit">
+                        Utwórz klasę
+                    </Button>
+                    <Button
+                        variant="outline"
+                        color="red"
+                        onClick={() => clearAndCloseCreateModal()}
+                    >
+                        Anuluj
+                    </Button>
+                </div>
+            </form>
         </div>
     </Modal>
 

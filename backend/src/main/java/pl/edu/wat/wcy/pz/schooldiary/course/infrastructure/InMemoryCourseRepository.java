@@ -5,10 +5,7 @@ import pl.edu.wat.wcy.pz.schooldiary.course.domain.Course;
 import pl.edu.wat.wcy.pz.schooldiary.course.domain.CourseNotFoundException;
 import pl.edu.wat.wcy.pz.schooldiary.course.domain.CourseRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 class InMemoryCourseRepository implements CourseRepository {
@@ -24,7 +21,10 @@ class InMemoryCourseRepository implements CourseRepository {
 
     @Override
     public List<Course> findAll() {
-        return courses.values().stream().toList();
+        return courses.values()
+                .stream()
+                .sorted(Comparator.comparing(Course::createdAt).reversed())
+                .toList();
     }
 
     @Override
